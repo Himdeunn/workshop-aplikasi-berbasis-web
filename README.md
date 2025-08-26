@@ -102,8 +102,6 @@ Silakan kontribusikan jika kamu menambahkan materi workshop, modul, catatan, ata
 
 ## Lisensi
 
-Tuliskan lisensi yang berlaku, misalnya:
-
 ```
 MIT License
 ```
