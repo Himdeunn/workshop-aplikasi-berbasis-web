@@ -12,7 +12,7 @@ class Employee extends Model
         'phone_number',
         'birth_date',
         'address',
-        'data_entry',
+        'date_entry',
         'status',
     ];
 }
