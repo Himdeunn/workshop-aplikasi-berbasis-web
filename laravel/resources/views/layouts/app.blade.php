@@ -1,4 +1,5 @@
 @include('components.header')
+@include('components.navbar')
 
 <body class="bg-gray-100">
     <main class="container mx-auto p-4">
