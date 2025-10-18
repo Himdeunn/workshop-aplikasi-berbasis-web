@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'The Comp | Welcome')
 
 @section('content')
     <div class="max-w-3xl mx-auto text-center">

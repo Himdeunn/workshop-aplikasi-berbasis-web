@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Pegawai')
+@section('title', 'The Comp | Employee')
 
 @section('content')
     <div class="mb-8">
@@ -19,7 +19,7 @@
                 </a>
                 <a href="/"
                     class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg hover:opacity-90 transition">
-                    ← Back to the Main
+                    ← Back to Main
                 </a>
             </div>
         </div>
@@ -31,33 +31,39 @@
                 <tr>
                     <th class="px-6 py-3">Nama Lengkap</th>
                     <th class="px-6 py-3">Email</th>
+                    <th class="px-6 py-3">Department</th>
+                    <th class="px-6 py-3">Position</th>
                     <th class="px-6 py-3">Nomor Telepon</th>
                     <th class="px-6 py-3">Tanggal Lahir</th>
-                    <th class="px-6 py-3">Alamat</th>
-                    <th class="px-6 py-3">Tanggal Masuk</th>
                     <th class="px-6 py-3">Status</th>
                     <th class="px-6 py-3 text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-                @foreach ($employees as $employee)
+                @forelse ($employees as $employee)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-medium text-gray-900">{{ $employee->fullname }}</td>
                         <td class="px-6 py-4 text-gray-700">{{ $employee->email }}</td>
+                        <td class="px-6 py-4 text-gray-700">
+                            {{ $employee->department?->department_name ?? '—' }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-700">
+                            {{ $employee->position?->position_name ?? '—' }}
+                        </td>
                         <td class="px-6 py-4 text-gray-700">{{ $employee->phone_number }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $employee->birth_date }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $employee->address }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $employee->date_entry }}</td>
+                        <td class="px-6 py-4 text-gray-700">
+                            {{ \Carbon\Carbon::parse($employee->birth_date)->format('d M Y') }}
+                        </td>
                         <td class="px-6 py-4">
                             <span
-                                class="px-3 py-1 rounded-full text-[8.5px] font-semibold shadow-sm
-                            {{ $employee->status == 'active'
-                                ? 'bg-green-100 text-green-700 ring-1 ring-green-300'
-                                : 'bg-red-100 text-red-700 ring-1 ring-red-300' }}">
+                                class="px-3 py-1 rounded-full text-[11px] font-semibold shadow-sm
+                                    {{ $employee->status === 'active'
+                                        ? 'bg-green-100 text-green-700 ring-1 ring-green-300'
+                                        : 'bg-red-100 text-red-700 ring-1 ring-red-300' }}">
                                 {{ ucfirst($employee->status) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-center flex items-center justify-center gap-2">
+                        <td class="px-6 py-4 flex justify-center gap-2">
                             <a href="{{ route('employees.show', $employee->id) }}"
                                 class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-xs font-medium transition">
                                 Detail
@@ -67,18 +73,29 @@
                                 Edit
                             </a>
                             <form action="{{ route('employees.destroy', $employee->id) }}" method="POST"
-                                onsubmit="return confirm('Yakin ingin menghapus?')">
+                                onsubmit="return confirm('Yakin ingin menghapus pegawai ini?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
                                     class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 text-xs font-medium transition">
-                                    Delete
+                                    Hapus
                                 </button>
                             </form>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="8" class="px-6 py-6 text-center text-gray-500 text-sm">
+                            Tidak ada data pegawai yang tersedia.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
+    </div>
+
+    {{-- Pagination --}}
+    <div class="mt-6">
+        {{ $employees->links() }}
     </div>
 @endsection
