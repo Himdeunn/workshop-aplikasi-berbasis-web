@@ -12,7 +12,39 @@
             <!-- Center: Nav Links -->
             <div class="hidden md:flex items-center space-x-8">
                 <a href="{{ url('/') }}" class="text-gray-700 hover:text-blue-600 transition">Dashboard</a>
-                <a href="{{ route('employees.index') }}" class="text-gray-700 hover:text-blue-600 transition">Pegawai</a>
+
+                <!-- Dropdown: Pegawai -->
+                <div class="relative group">
+                    <button class="flex items-center text-gray-700 hover:text-blue-600 transition focus:outline-none">
+                        Pegawai
+                        <svg class="ml-1 h-4 w-4 transform group-hover:rotate-180 transition-transform"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div
+                        class="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+                        <a href="{{ route('employees.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">
+                            Data Pegawai
+                        </a>
+                        <a href="{{ route('departments.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Departments
+                        </a>
+                        <a href="{{ route('positions.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Positions
+                        </a>
+                        <a href="{{ route('attendances.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg">
+                            Attendances
+                        </a>
+                    </div>
+                </div>
+
                 <a href="#" class="text-gray-700 hover:text-blue-600 transition">Laporan</a>
                 <a href="#" class="text-gray-700 hover:text-blue-600 transition">Pengaturan</a>
             </div>
@@ -31,7 +63,6 @@
             <!-- Mobile Menu Button -->
             <div class="flex items-center md:hidden">
                 <button id="mobile-menu-button" class="text-gray-700 focus:outline-none">
-                    <!-- Heroicon: menu -->
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -44,9 +75,32 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="hidden md:hidden px-4 pb-4 space-y-2 bg-white border-t border-gray-200">
         <a href="{{ url('/') }}" class="block text-gray-700 hover:text-blue-600 transition">Dashboard</a>
-        <a href="{{ route('employees.index') }}" class="block text-gray-700 hover:text-blue-600 transition">Pegawai</a>
+
+        <!-- Dropdown (Accordion style for mobile) -->
+        <div x-data="{ open: false }" class="border-t border-gray-100 pt-2">
+            <button @click="open = !open"
+                class="flex justify-between items-center w-full text-gray-700 hover:text-blue-600 transition">
+                Pegawai
+                <svg :class="{ 'rotate-180': open }" class="h-4 w-4 transform transition-transform"
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+            <div x-show="open" class="mt-2 pl-4 space-y-1">
+                <a href="{{ route('employees.index') }}" class="block text-gray-700 hover:text-blue-600 transition">Data
+                    Pegawai</a>
+                <a href="{{ route('departments.index') }}"
+                    class="block text-gray-700 hover:text-blue-600 transition">Departments</a>
+                <a href="{{ route('positions.index') }}"
+                    class="block text-gray-700 hover:text-blue-600 transition">Positions</a>
+                <a href="{{ route('attendances.index') }}"
+                    class="block text-gray-700 hover:text-blue-600 transition">Attendances</a>
+            </div>
+        </div>
+
         <a href="#" class="block text-gray-700 hover:text-blue-600 transition">Laporan</a>
         <a href="#" class="block text-gray-700 hover:text-blue-600 transition">Pengaturan</a>
+
         <form method="POST" action="#">
             @csrf
             <button type="submit"
@@ -56,6 +110,9 @@
         </form>
     </div>
 </nav>
+
+<!-- Alpine.js for dropdown toggle (lightweight) -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <script>
     // Simple toggle for mobile menu

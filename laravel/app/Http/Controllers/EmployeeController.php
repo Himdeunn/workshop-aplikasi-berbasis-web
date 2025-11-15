@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Department;
+use App\Models\Position;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -12,7 +14,11 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::latest()->paginate(5);
+        // Load related models efficiently (Department & Position)
+        $employees = Employee::with(['department', 'position'])
+            ->latest()
+            ->paginate(5);
+
         return view('employees.index', compact('employees'));
     }
 
@@ -21,7 +27,10 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('employees.create');
+        return view('employees.create', [
+            'departments' => Department::orderBy('department_name')->get(),
+            'positions' => Position::orderBy('position_name')->get(),
+        ]);
     }
 
     /**
@@ -29,71 +38,80 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'fullname' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'required|email|max:255|unique:employees,email',
             'phone_number' => 'required|string|max:20',
             'birth_date' => 'required|date',
             'address' => 'required|string|max:255',
             'date_entry' => 'required|date',
-            'status' => 'required|string|max:50',
+            'status' => 'required|in:active,non-active',
+            'department_id' => 'required|exists:departments,id',
+            'position_id' => 'required|exists:positions,id',
         ]);
-        Employee::create($request->all());
-        return redirect()->route('employees.index');
+
+        Employee::create($validated);
+
+        return redirect()
+            ->route('employees.index')
+            ->with('success', '✅ Employee added successfully!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Employee $employee)
     {
-        $employee = Employee::find($id);
+        $employee->load(['department', 'position', 'attendances']);
+
         return view('employees.show', compact('employee'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Employee $employee)
     {
-        $employee = Employee::find($id);
-        return view('employees.edit', compact('employee'));
+        return view('employees.edit', [
+            'employee' => $employee,
+            'departments' => Department::orderBy('department_name')->get(),
+            'positions' => Position::orderBy('position_name')->get(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Employee $employee)
     {
-        $request->validate([
+        $validated = $request->validate([
             'fullname' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'required|email|max:255|unique:employees,email,' . $employee->id,
             'phone_number' => 'required|string|max:20',
             'birth_date' => 'required|date',
             'address' => 'required|string|max:255',
             'date_entry' => 'required|date',
-            'status' => 'required|string|max:50',
+            'status' => 'required|in:active,non-active',
+            'department_id' => 'required|exists:departments,id',
+            'position_id' => 'required|exists:positions,id',
         ]);
-        $employee = Employee::findOrFail($id);
-        $employee->update($request->only([
-            'fullname',
-            'email',
-            'phone_number',
-            'birth_date',
-            'address',
-            'date_entry',
-            'status',
-        ]));
-        return redirect()->route('employees.index');
+
+        $employee->update($validated);
+
+        return redirect()
+            ->route('employees.index')
+            ->with('success', '✅ Employee updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Employee $employee)
     {
-        $employee = Employee::find($id);
         $employee->delete();
-        return redirect()->route('employees.index');
+
+        return redirect()
+            ->route('employees.index')
+            ->with('success', '🗑️ Employee deleted successfully!');
     }
 }
