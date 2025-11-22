@@ -29,6 +29,7 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
+        // Jika validasi gagal, Laravel otomatis redirect back() dengan errors.
         $request->validate([
             'department_name' => 'required|string|max:255',
         ]);
@@ -37,8 +38,9 @@ class DepartmentController extends Controller
             'department_name' => $request->department_name,
         ]);
 
+        // PERBAIKAN: Pesan sukses yang eksplisit
         return redirect()->route('departments.index')
-                         ->with('success', 'Department created successfully.');
+                             ->with('success', '✅ Departemen berhasil ditambahkan.');
     }
 
     /**
@@ -64,6 +66,7 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Jika validasi gagal, Laravel otomatis redirect back() dengan errors.
         $request->validate([
             'department_name' => 'required|string|max:255',
         ]);
@@ -73,8 +76,9 @@ class DepartmentController extends Controller
             'department_name' => $request->department_name,
         ]);
 
+        // PERBAIKAN: Pesan sukses yang eksplisit
         return redirect()->route('departments.index')
-                         ->with('success', 'Department updated successfully.');
+                             ->with('success', '✅ Departemen berhasil diperbarui.');
     }
 
     /**
@@ -85,7 +89,8 @@ class DepartmentController extends Controller
         $department = Department::findOrFail($id);
         $department->delete();
 
+        // PERBAIKAN: Pesan sukses yang eksplisit
         return redirect()->route('departments.index')
-                         ->with('success', 'Department deleted successfully.');
+                             ->with('success', '🗑️ Departemen berhasil dihapus.');
     }
 }

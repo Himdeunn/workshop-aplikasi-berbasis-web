@@ -3,99 +3,105 @@
 @section('title', 'The Comp | Employee')
 
 @section('content')
-    <div class="mb-8">
-        <div class="flex justify-between items-center">
-            <h2 class="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+    <div class="mb-8 container mx-auto px-4">
+        <div class="flex justify-between items-center flex-wrap gap-4">
+            <h2 class="text-3xl font-extrabold text-gray-900">
                 Daftar Pegawai
             </h2>
-            <div class="flex space-x-5 justify-center items-center">
-                <a href="{{ route('employees.create') }}"
-                    class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg hover:opacity-90 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Tambah Pegawai
-                </a>
+            <div class="flex space-x-3 justify-center items-center">
                 <a href="/"
-                    class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:shadow-lg hover:opacity-90 transition">
+                    class="inline-flex items-center gap-2 bg-white border border-gray-400 text-gray-800 px-5 py-2 rounded-xl shadow hover:bg-gray-100 transition font-semibold text-sm">
                     ← Back to Main
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-200">
-        <table class="w-full text-sm text-left border-collapse">
-            <thead class="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase text-xs tracking-wider">
-                <tr>
-                    <th class="px-6 py-3">Nama Lengkap</th>
-                    <th class="px-6 py-3">Email</th>
-                    <th class="px-6 py-3">Department</th>
-                    <th class="px-6 py-3">Position</th>
-                    <th class="px-6 py-3">Nomor Telepon</th>
-                    <th class="px-6 py-3">Tanggal Lahir</th>
-                    <th class="px-6 py-3">Status</th>
-                    <th class="px-6 py-3 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @forelse ($employees as $employee)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 font-medium text-gray-900">{{ $employee->fullname }}</td>
-                        <td class="px-6 py-4 text-gray-700">{{ $employee->email }}</td>
-                        <td class="px-6 py-4 text-gray-700">
-                            {{ $employee->department?->department_name ?? '—' }}
-                        </td>
-                        <td class="px-6 py-4 text-gray-700">
-                            {{ $employee->position?->position_name ?? '—' }}
-                        </td>
-                        <td class="px-6 py-4 text-gray-700">{{ $employee->phone_number }}</td>
-                        <td class="px-6 py-4 text-gray-700">
-                            {{ \Carbon\Carbon::parse($employee->birth_date)->format('d M Y') }}
-                        </td>
-                        <td class="px-6 py-4">
+    <div class="container mx-auto px-4">
+        @if ($employees->isEmpty())
+            <div class="bg-white p-8 rounded-2xl shadow-xl text-center border border-gray-200">
+                <p class="text-gray-500 font-medium">Tidak ada data pegawai yang tersedia.</p>
+            </div>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                @foreach ($employees as $employee)
+                    <div
+                        class="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 flex flex-col transition-all hover:shadow-2xl hover:border-gray-400/50">
+
+                        <div class="flex justify-between items-start mb-4 border-b pb-3 border-gray-100">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 leading-tight">
+                                    {{ $employee->fullname }}
+                                </h3>
+                                <p class="text-xs text-gray-500 mt-1">{{ $employee->email }}</p>
+                            </div>
+
+                            @php
+                                $statusClasses = $employee->status === 'active'
+                                    ? 'bg-gray-200 text-gray-800 ring-gray-400'
+                                    : 'bg-gray-800 text-white ring-gray-600';
+                            @endphp
                             <span
-                                class="px-3 py-1 rounded-full text-[11px] font-semibold shadow-sm
-                                    {{ $employee->status === 'active'
-                                        ? 'bg-green-100 text-green-700 ring-1 ring-green-300'
-                                        : 'bg-red-100 text-red-700 ring-1 ring-red-300' }}">
+                                class="px-3 py-1 rounded-full text-[11px] font-semibold shadow-sm ring-1 {{ $statusClasses }}">
                                 {{ ucfirst($employee->status) }}
                             </span>
-                        </td>
-                        <td class="px-6 py-4 flex justify-center gap-2">
+                        </div>
+
+                        <div class="space-y-2 text-sm flex-grow">
+                            <p class="flex justify-between border-b border-dashed border-gray-100 pb-1">
+                                <span class="text-gray-500">Dept:</span>
+                                <span
+                                    class="font-medium text-gray-800">{{ $employee->department?->department_name ?? '—' }}</span>
+                            </p>
+                            <p class="flex justify-between border-b border-dashed border-gray-100 pb-1">
+                                <span class="text-gray-500">Posisi:</span>
+                                <span
+                                    class="font-medium text-gray-800">{{ $employee->position?->position_name ?? '—' }}</span>
+                            </p>
+                            <p class="flex justify-between border-b border-dashed border-gray-100 pb-1">
+                                <span class="text-gray-500">Telepon:</span>
+                                <span class="font-medium text-gray-800">{{ $employee->phone_number }}</span>
+                            </p>
+                            <p class="flex justify-between border-b border-dashed border-gray-100 pb-1">
+                                <span class="text-gray-500">Lahir:</span>
+                                <span class="font-medium text-gray-800">
+                                    {{ \Carbon\Carbon::parse($employee->birth_date)->format('d M Y') }}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="flex gap-2 mt-5 pt-3 border-t border-gray-100">
+
                             <a href="{{ route('employees.show', $employee->id) }}"
-                                class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-xs font-medium transition">
+                                class="flex-1 text-center px-2 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-xs font-medium transition">
                                 Detail
                             </a>
+
                             <a href="{{ route('employees.edit', $employee->id) }}"
-                                class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 text-xs font-medium transition">
+                                class="flex-1 text-center px-2 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-xs font-medium transition">
                                 Edit
                             </a>
+
                             <form action="{{ route('employees.destroy', $employee->id) }}" method="POST"
-                                onsubmit="return confirm('Yakin ingin menghapus pegawai ini?')">
+                                onsubmit="return confirm('Yakin ingin menghapus pegawai ini?')"
+                                class="flex-1">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
-                                    class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 text-xs font-medium transition">
+                                    class="w-full px-2 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-700 text-xs font-medium transition">
                                     Hapus
                                 </button>
                             </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" class="px-6 py-6 text-center text-gray-500 text-sm">
-                            Tidak ada data pegawai yang tersedia.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
 
-    {{-- Pagination --}}
-    <div class="mt-6">
-        {{ $employees->links() }}
+        {{-- Pagination --}}
+        <div class="mt-8">
+            {{ $employees->links() }}
+        </div>
     </div>
 @endsection

@@ -12,7 +12,7 @@ class PositionController extends Controller
      */
     public function index()
     {
-        $positions = Position::latest()->paginate(5);
+        $positions = Position::latest()->paginate(4);
         return view('positions.index', compact('positions'));
     }
 
@@ -29,6 +29,7 @@ class PositionController extends Controller
      */
     public function store(Request $request)
     {
+        // Jika validasi gagal, Laravel otomatis redirect back() dengan errors.
         $request->validate([
             'position_name' => 'required|string|max:255',
             'base_salary' => 'required|numeric|min:0',
@@ -39,8 +40,9 @@ class PositionController extends Controller
             'base_salary' => $request->base_salary,
         ]);
 
+        // PERBAIKAN: Pesan sukses yang eksplisit
         return redirect()->route('positions.index')
-                         ->with('success', 'Position created successfully.');
+                             ->with('success', '✅ Jabatan berhasil ditambahkan.');
     }
 
     /**
@@ -66,6 +68,7 @@ class PositionController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Jika validasi gagal, Laravel otomatis redirect back() dengan errors.
         $request->validate([
             'position_name' => 'required|string|max:255',
             'base_salary' => 'required|numeric|min:0',
@@ -77,8 +80,9 @@ class PositionController extends Controller
             'base_salary' => $request->base_salary,
         ]);
 
+        // PERBAIKAN: Pesan sukses yang eksplisit
         return redirect()->route('positions.index')
-                         ->with('success', 'Position updated successfully.');
+                             ->with('success', '✅ Jabatan berhasil diperbarui.');
     }
 
     /**
@@ -89,7 +93,8 @@ class PositionController extends Controller
         $position = Position::findOrFail($id);
         $position->delete();
 
+        // PERBAIKAN: Pesan sukses yang eksplisit
         return redirect()->route('positions.index')
-                         ->with('success', 'Position deleted successfully.');
+                             ->with('success', '🗑️ Jabatan berhasil dihapus.');
     }
 }

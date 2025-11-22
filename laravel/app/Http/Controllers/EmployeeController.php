@@ -17,44 +17,9 @@ class EmployeeController extends Controller
         // Load related models efficiently (Department & Position)
         $employees = Employee::with(['department', 'position'])
             ->latest()
-            ->paginate(5);
+            ->paginate(4);
 
         return view('employees.index', compact('employees'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('employees.create', [
-            'departments' => Department::orderBy('department_name')->get(),
-            'positions' => Position::orderBy('position_name')->get(),
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'fullname' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:employees,email',
-            'phone_number' => 'required|string|max:20',
-            'birth_date' => 'required|date',
-            'address' => 'required|string|max:255',
-            'date_entry' => 'required|date',
-            'status' => 'required|in:active,non-active',
-            'department_id' => 'required|exists:departments,id',
-            'position_id' => 'required|exists:positions,id',
-        ]);
-
-        Employee::create($validated);
-
-        return redirect()
-            ->route('employees.index')
-            ->with('success', '✅ Employee added successfully!');
     }
 
     /**
@@ -84,6 +49,7 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, Employee $employee)
     {
+        // Jika validasi gagal, Laravel otomatis redirect back() dengan errors.
         $validated = $request->validate([
             'fullname' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:employees,email,' . $employee->id,
@@ -98,9 +64,10 @@ class EmployeeController extends Controller
 
         $employee->update($validated);
 
+        // PERBAIKAN: Menggunakan pesan sukses yang lebih rapi untuk Toast
         return redirect()
             ->route('employees.index')
-            ->with('success', '✅ Employee updated successfully!');
+            ->with('success', '✅ Data pegawai berhasil diperbarui.');
     }
 
     /**
@@ -110,8 +77,9 @@ class EmployeeController extends Controller
     {
         $employee->delete();
 
+        // PERBAIKAN: Menggunakan pesan sukses yang lebih rapi untuk Toast
         return redirect()
             ->route('employees.index')
-            ->with('success', '🗑️ Employee deleted successfully!');
+            ->with('success', '🗑️ Data pegawai berhasil dihapus.');
     }
 }
