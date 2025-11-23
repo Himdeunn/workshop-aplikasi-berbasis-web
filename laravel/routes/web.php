@@ -9,12 +9,13 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\Auth\LogoutController;
 
 Route::get('/', fn() => view('welcome'));
 
 /*
 |--------------------------------------------------------------------------
-| Guest Routes
+| Guest Routes (Akses Web UI)
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
@@ -26,14 +27,11 @@ Route::middleware('guest')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated Routes
+| Authenticated Routes (Akses Web UI)
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-
-    Route::post('/logout', [\App\Http\Controllers\Auth\LogoutController::class, 'logout'])->name('logout');
-
-    // EMPLOYEE ONLY
+    Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
     Route::middleware('role:employee')->group(function () {
         Route::get('/attendance/absence', [AttendanceController::class, 'absence'])->name('attendance.absence');
         Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn'])->name('attendance.checkin');
@@ -42,11 +40,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
 
-    // ADMIN ONLY
     Route::middleware('role:admin')->group(function () {
-        // Hapus rute 'create' dan 'store' untuk employees
         Route::resource('employees', EmployeeController::class)->except(['create', 'store']);
-
         Route::resource('departments', DepartmentController::class);
         Route::resource('positions', PositionController::class);
         Route::resource('attendances', AttendanceController::class)->except([
