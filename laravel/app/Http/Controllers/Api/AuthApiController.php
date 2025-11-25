@@ -48,20 +48,30 @@ class AuthApiController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:6',
         ]);
 
+        // Terima name/fullname dari frontend
+        $name = $request->name ?? $request->fullname;
+
+        if (!$name) {
+            return response()->json([
+                'error' => 'Field name/fullname harus dikirim.'
+            ], 422);
+        }
+
+        // Buat User
         $user = User::create([
-            'name'     => $request->name,
+            'name'     => $name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'role'     => 'employee',
         ]);
 
+        // Buat Employee (link ke user_id)
         Employee::create([
-            'fullname'     => $request->name,
+            'fullname'     => $name,
             'email'        => $request->email,
             'phone_number' => '-',
             'address'      => '-',
@@ -70,13 +80,13 @@ class AuthApiController extends Controller
             'user_id'      => $user->id,
         ]);
 
-        // Login dan Buat Token setelah Register
+        // Token Sanctum
         $token = $user->createToken('employee-auth-token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
             'user_name' => $user->name,
-            'message' => 'Pendaftaran berhasil dan token dibuat.',
+            'message' => 'Pendaftaran berhasil & data employee terbuat.',
         ], 201);
     }
 }

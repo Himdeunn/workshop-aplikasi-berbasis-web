@@ -16,6 +16,7 @@ class Employee extends Model
         'status',
         'department_id',
         'position_id',
+        'user_id',
     ];
 
     // 🔹 Employee belongs to one Department
